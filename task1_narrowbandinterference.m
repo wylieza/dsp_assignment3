@@ -1,27 +1,48 @@
-#filter out narrow band interference
-#y = audioread("fortroad_lost.wav");
+%filter out narrow band interference
+
+%Clear any open plot windows
+close all;
+
 load handel;
-fs = 8192; #Audio sampling frequency
+%y(length(y)) = [];
+fs = 8192; %Audio sampling frequency
 num_samples = length(y);
 
-#plot([0:2*pi/num_samples:2*pi-2*pi/num_samples], abs(fft(y)));
-#soundsc(y, fs);
+%Generate tone at 1024Hz and add it to handel to create yc
+a0 = 1; %Magnitude
+fi = 1024; %Frequency (Hz)
+w0 = 2*pi/fs*fi; %Frequency in rad/s
+yc = y + a0*sin(w0*(1:length(y))'); %New and corrupted siganal
 
-
-a0 = 0.1;
-fi = 1024;
-w0 = 2*pi/fs*fi;
-yc = y + a0*sin(w0*(1:length(y))');
-
-#figure();
-plot([0:2*pi/num_samples:2*pi-2*pi/num_samples].*fs/(2*pi), abs(fft(yc)));
-soundsc(yc, fs);
-
-
-impresp = [-0.01240671338741861600, 0.00694358185963385960, 0.02652539108687676200, 0.03401094665800102900, 0.02195785296111492400, -0.00635874014222203090, -0.03671411631501587300, -0.05062669031672122100, -0.03612403146241162400, 0.00344193957770653300, 0.04849139035380394700, 0.07231322279686837300, 0.05632839250782021400, 0.00309968940604096660, -0.06144165779519712000, 0.86111908442223983000, -0.06144165779519712000, 0.00309968940604096660, 0.05632839250782021400, 0.07231322279686837300, 0.04849139035380394700, 0.00344193957770653300, -0.03612403146241162400, -0.05062669031672122100, -0.03671411631501587300, -0.00635874014222203090, 0.02195785296111492400, 0.03401094665800102900, 0.02652539108687676200, 0.00694358185963385960, -0.01240671338741861600];
-ycf = conv(yc, impresp);
-
+%Plot the corrupted signal
 figure();
-plot([0:2*pi/length(ycf):2*pi-2*pi/length(ycf)].*fs/(2*pi), abs(fft(ycf)));
+freq_arr = fft_freq_axis(abs(fft(yc))).*fs/(2*pi);
+plot(freq_arr, 20.*log10(fft_shift(abs(fft(yc)))));
+title("FFT of 'handel' after adding 1024Hz signal");
+xlabel("Frequency in (Hz)");
+xlim([freq_arr(1), freq_arr(length(freq_arr))]);
+ylabel("Magnitude of FFT (dB)");
+ylim([-60, 100]);
+print(gcf, '-dpng', 'corrupted_handel.png') %Save as png
 
-soundsc(ycf, fs);
+%Play the corrupted signal
+%soundsc(yc, fs);
+
+%Filter the corrupted signal using the bandstop filter
+load('filter_coeff_1024bs');
+ycf = conv(yc, filter_coeff);
+
+%Plot the result after filtering (my fftshift)
+figure();
+freq_arr = fft_freq_axis(abs(fft(ycf))).*fs/(2*pi);
+plot(freq_arr, 20.*log10(fft_shift(abs(fft(ycf)))));
+title("FFT of 'handel' after filtering out the 1024Hz signal");
+xlabel("Frequency (Hz)");
+xlim([freq_arr(1), freq_arr(length(freq_arr))]);
+ylabel("Magnitude of FFT (dB)");
+ylim([-60, 100]);
+print(gcf, '-dpng', 'filtering_result.png') %Save as png
+
+%Play the recovered signal
+%soundsc(ycf, fs);
+
