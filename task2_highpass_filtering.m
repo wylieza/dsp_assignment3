@@ -87,7 +87,7 @@ print(gcf, '-dpng', 'hpiir_200hz_freqz.png') %Save as png
 
 
 if(0)
-%Filter the corrupted signal using the bandstop filter
+%Filter the corrupted signal using the FIR HP Filter
 ycf = conv(yc, hp_firfilter_200hz);
     
 %Plot the result after filtering (my fftshift)
@@ -97,21 +97,47 @@ freq_arr = fft_freq_axis(abs(fft(ycf))).*fs/(2*pi);
 plot(freq_arr, 20.*log10(fft_shift(abs(fft(ycf)))));
 title("FFT after filtering using a 200Hz FIR HP-Filter");
 xlabel("Frequency (Hz)");
-%xlim([freq_arr(1), freq_arr(length(freq_arr))]);
-xlim([-1000 1000]);
+xlim([freq_arr(1), freq_arr(length(freq_arr))]);
 ylabel("Magnitude of FFT (dB)");
-%ylim([-60, 100]);
+
 
 subplot(2,1,2);
 freq_arr = fft_freq_axis(abs(fft(ycf))).*fs/(2*pi);
 plot(freq_arr, fft_shift(angle(fft(ycf))));
 xlabel("Frequency (Hz)");
-%xlim([freq_arr(1), freq_arr(length(freq_arr))]);
-xlim([-1000 1000]);
+xlim([freq_arr(1), freq_arr(length(freq_arr))]);
 ylabel("Anlge of FFT (Rad)");
 
 
-print(gcf, '-dpng', 'hpfir_200hz_filtering_result.png') %Save as png
+%print(gcf, '-dpng', 'hpfir_200hz_filtering_result.png') %Save as png
+
+end
+
+
+if(0)
+%Filter the corrupted signal using the IIR HP Filter
+ycf = conv(yc, iirfilter_hp_200hz_SOS); %WHAT TO DO HERE?
+    
+%Plot the result after filtering (my fftshift)
+figure();
+subplot(2,1,1);
+freq_arr = fft_freq_axis(abs(fft(ycf))).*fs/(2*pi);
+plot(freq_arr, 20.*log10(fft_shift(abs(fft(ycf)))));
+title("FFT after filtering using a 200Hz IIR HP-Filter");
+xlabel("Frequency (Hz)");
+xlim([freq_arr(1), freq_arr(length(freq_arr))]);
+ylabel("Magnitude of FFT (dB)");
+
+
+subplot(2,1,2);
+freq_arr = fft_freq_axis(abs(fft(ycf))).*fs/(2*pi);
+plot(freq_arr, fft_shift(angle(fft(ycf))));
+xlabel("Frequency (Hz)");
+xlim([freq_arr(1), freq_arr(length(freq_arr))]);
+ylabel("Anlge of FFT (Rad)");
+
+
+%print(gcf, '-dpng', 'hpfir_200hz_filtering_result.png') %Save as png
 
 end
 
