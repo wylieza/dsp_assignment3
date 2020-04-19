@@ -37,7 +37,7 @@ load('hp_firfilter_200hz');
 %determine the filters frequency response
 mag_response = abs(freqz(hp_firfilter_200hz, 1, 1000));
 phase_response = angle(freqz(hp_firfilter_200hz, 1, 1000));
-frequency_labeling = fs/(2*pi)*(0:2*pi/length(mag_response):2*pi - 2*pi/length(mag_response));
+frequency_labeling = (fs/2)/(2*pi)*(0:2*pi/length(mag_response):2*pi - 2*pi/length(mag_response));
 
 %plot the filters frequency response
 figure();
@@ -65,7 +65,7 @@ load('iirfilter_hp_200hz');
 %determine the filters frequency response
 mag_response = abs(freqz(iirfilter_hp_200hz_SOS, 1000));
 phase_response = angle(freqz(iirfilter_hp_200hz_SOS, 1000));
-frequency_labeling = fs/(2*pi)*(0:2*pi/length(mag_response):2*pi - 2*pi/length(mag_response));
+frequency_labeling = (fs/2)/(2*pi)*(0:2*pi/length(mag_response):2*pi - 2*pi/length(mag_response));
 
 %plot the filters frequency response
 figure();
